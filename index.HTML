@@ -7,9 +7,40 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <body>
+    <div class="container">
+        <header><h1>請求管理 DueLog</h1></header>
+        <nav id="due-nav">
+            <button class="nav-btn" data-category="endOfCurrentMonth">当月末 期限</button>
+            <button class="nav-btn" data-category="nextMonth20">翌月20日 期限</button>
+            <button class="nav-btn" data-category="nextMonthEnd">翌月末 期限</button>
+            <button class="nav-btn" data-category="nextMonth15">上限超過 (翌月15日)</button>
+        </nav>
+        <main>
+            <div class="content-header">
+                <h2 id="table-title"></h2>
+                <button id="add-invoice-btn">+ 新規請求を登録</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>会社名</th><th>請求額</th><th>銀行</th><th>振込期限</th><th>振込済</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="invoice-table-body"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="invoice-modal" class="modal">
+        </div>
+
+    <div id="details-modal" class="modal">
+        </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
     <script src="script.js"></script>
+</body>
 </body>
 </html>
