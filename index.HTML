@@ -3,44 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DueLog - 請求管理 (クラウド同期版)</title>
+    <title>DueLog - 請求管理</title>
     <link rel="stylesheet" href="style.css">
+    
+    <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <script defer src="script.js"></script>
 </head>
 <body>
-    <body>
-    <div class="container">
-        <header><h1>請求管理 DueLog</h1></header>
-        <nav id="due-nav">
-            <button class="nav-btn" data-category="endOfCurrentMonth">当月末 期限</button>
-            <button class="nav-btn" data-category="nextMonth20">翌月20日 期限</button>
-            <button class="nav-btn" data-category="nextMonthEnd">翌月末 期限</button>
-            <button class="nav-btn" data-category="nextMonth15">上限超過 (翌月15日)</button>
-        </nav>
-        <main>
-            <div class="content-header">
-                <h2 id="table-title"></h2>
-                <button id="add-invoice-btn">+ 新規請求を登録</button>
+    <div id="auth-container">
+        <div class="auth-form-wrapper">
+            <h1>DueLog</h1>
+            <div class="form-group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" required>
             </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr><th>会社名</th><th>請求額</th><th>銀行</th><th>振込期限</th><th>振込済</th><th>操作</th></tr>
-                    </thead>
-                    <tbody id="invoice-table-body"></tbody>
-                </table>
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" required>
             </div>
-        </main>
+            <div class="auth-buttons">
+                <button id="login-btn">ログイン</button>
+                <button id="signup-btn">新規登録</button>
+            </div>
+            <p id="auth-error" class="error-message"></p>
+        </div>
     </div>
 
-    <div id="invoice-modal" class="modal">
+    <div id="app-container" class="hidden">
+        <div class="container">
+            <header>
+                <h1>請求管理 DueLog</h1>
+                <div class="header-user-info">
+                    <span id="user-email"></span>
+                    <button id="logout-btn">ログアウト</button>
+                </div>
+            </header>
+            <nav id="due-nav">
+                <button class="nav-btn" data-category="endOfCurrentMonth">当月末 期限</button>
+                <button class="nav-btn" data-category="nextMonth20">翌月20日 期限</button>
+                <button class="nav-btn" data-category="nextMonthEnd">翌月末 期限</button>
+                <button class="nav-btn" data-category="nextMonth15">上限超過 (翌月15日)</button>
+            </nav>
+            <main>
+                <div class="content-header">
+                    <h2 id="table-title"></h2>
+                    <button id="add-invoice-btn">+ 新規請求を登録</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>会社名</th><th>請求額</th><th>銀行</th><th>振込期限</th><th>振込済</th><th>操作</th></tr>
+                        </thead>
+                        <tbody id="invoice-table-body"></tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+        
+        <div id="invoice-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>新規請求データの登録</h3>
+                     <span class="close-btn" data-target-modal="invoice-modal">&times;</span>
+                </div>
+                <form id="invoice-form">
+                    <div class="form-group">
+                        <label for="company-name">会社名</label>
+                        <input type="text" id="company-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment-amount">支払い額 (円)</label>
+                        <input type="number" id="payment-amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transfer-limit">振込上限 (円)</label>
+                        <input type="number" id="transfer-limit" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bank">銀行選択</label>
+                        <select id="bank" required>
+                            <option value="○○銀行">○○銀行</option>
+                            <option value="××銀行">××銀行</option>
+                            <option value="△△銀行">△△銀行</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="due-date-select">振込期限</label>
+                        <select id="due-date-select" required>
+                            <option value="endOfCurrentMonth">当月末</option>
+                            <option value="nextMonth20">翌月20日</option>
+                            <option value="nextMonthEnd">翌月末</option>
+                        </select>
+                    </div>
+                     <div class="form-group checkbox">
+                        <input type="checkbox" id="is-paid">
+                        <label for="is-paid">振込済み（新規登録時）</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">コメント</label>
+                        <textarea id="comment" rows="3"></textarea>
+                    </div>
+                    <button type="submit" id="submit-btn">登録</button>
+                </form>
+            </div>
         </div>
 
-    <div id="details-modal" class="modal">
+        <div id="details-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>請求詳細</h3>
+                    <span class="close-btn" data-target-modal="details-modal">&times;</span>
+                </div>
+                <div id="details-content"></div>
+            </div>
         </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="script.js"></script>
-</body>
+    </div>
 </body>
 </html>
