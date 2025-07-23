@@ -45,14 +45,20 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: 4px;
 }
+
+/* ▼▼▼ ヘッダーのレイアウトを修正 ▼▼▼ */
 header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2.5rem;
   border-bottom: 2px solid var(--secondary-color);
   padding-bottom: 1.5rem;
 }
+/* ▲▲▲ ここまで ▲▲▲ */
+
 header h1 {
-  font-size: 3rem;
+  font-size: 2.5rem; /* 少しサイズを調整 */
   color: var(--secondary-color);
   font-weight: 700;
 }
@@ -300,7 +306,7 @@ td .action-btn.delete:hover {
     padding: 1.5rem;
   }
   header h1 {
-    font-size: 2.2rem;
+    font-size: 1.8rem; /* スマホ用に調整 */
   }
   .content-header {
     flex-direction: column;
@@ -418,10 +424,12 @@ td .action-btn.delete:hover {
 }
 
 /* --- ヘッダーのユーザー情報 --- */
+/* ▼▼▼ ユーザー情報のレイアウトを修正 ▼▼▼ */
 .header-user-info {
-  text-align: right;
-  margin-top: -1rem;
-  margin-bottom: 1rem;
+  /* text-align, margin は不要になったため削除 */
+  display: flex; /* 追加 */
+  align-items: center; /* 追加 */
+  gap: 1rem; /* 追加 */
 }
 #logout-btn {
   font-family: var(--font-main);
@@ -431,8 +439,10 @@ td .action-btn.delete:hover {
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
   cursor: pointer;
-  margin-left: 1rem;
+  margin-left: 0; /* 削除 */
 }
+/* ▲▲▲ ここまで ▲▲▲ */
+
 #logout-btn:hover {
   background-color: var(--accent-color);
   color: #fff;
